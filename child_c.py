@@ -18,8 +18,8 @@ if sim.clientID != -1:
     sim.get_position(quad.target, vrep.simx_opmode_streaming)
         
     time.sleep(0.2)
-    while 1: #run for 20 seconds
-        quad.target_position = sim.get_position(quad.target, vrep.simx_opmode_buffer)
+    while 1:
+        #sim.get_position(quad.target, vrep.simx_opmode_buffer)
         quad.update_sensor(quad.proximity_sensor_1)
         quad.update_sensor(quad.proximity_sensor_2)
         quad.update_sensor(quad.proximity_sensor_3)
@@ -27,44 +27,19 @@ if sim.clientID != -1:
         quad.update_sensor(quad.proximity_sensor_5)
         
         if sim.START:
-            if (quad.get_proximity_sensor_1 or quad.get_proximity_sensor_2 or
-                quad.get_proximity_sensor_3 or quad.get_proximity_sensor_4
-            ): 
-                z_temp = quad.target_position[2]
-                
-                time.sleep(0.5)
-                while 1:
-                    if not quad.get_proximity_sensor_1:
-                        count = 0
-                        time.sleep(0.5)
-                        while count <=50:
-                            quad.set_foward()
-                            quad.target_position = sim.get_position(quad.target, vrep.simx_opmode_buffer)
-                            
-                            count = count + 1
-                            time.sleep(0.02)
-                        
-                        while quad.target_position[2] > z_temp:
-                            if quad.get_proximity_sensor_5:
-                                print('bateu')
-                                break
-                            
-                            quad.set_down()
-                                                        
-                            quad.target_position = sim.get_position(quad.target, vrep.simx_opmode_buffer)
-                            
-                            time.sleep(0.05)
-                        break
-                    
-                    quad.set_up()
-                    quad.target_position = sim.get_position(quad.target, vrep.simx_opmode_buffer)
+            
+            if quad.get_proximity_sensor_1: 
+                quad.fix_trajectory('foward')
+            
+            if quad.get_proximity_sensor_3:
+                quad.fix_trajectory('back')
                     
                     
             if quad.target_position[0] > sim.x_limit[0]:
                 quad.set_foward()
 
-            # elif pos[1] > y_limit[0]:
-            #     err_code = vrep.simxSetObjectPosition(clientID,targetObj,-1,[pos[0], pos[1]-v_start, pos[2]],vrep.simx_opmode_oneshot)
+            # elif quad.target_position[1] > sim.y_limit[0]:
+            #     err_code = vrep.simxSetObjectPosition(sim.clientID,targetObj,-1,[pos[0], pos[1]-v_start, pos[2]],vrep.simx_opmode_oneshot)
             
             elif  quad.target_position[2] < sim.z_limit[1]:
                 quad.set_up()
