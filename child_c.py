@@ -26,23 +26,22 @@ if sim.clientID != -1:
         quad.update_sensor(quad.proximity_sensor_4)
         quad.update_sensor(quad.proximity_sensor_5)
         
+        # while quad.target_position[2] < sim.z_limit[1]:
+        #     quad.set_up()
+            
+        # while quad.target_position[0] > sim.x_limit[0]:
+        #     quad.set_back()
+            
         if sim.START:
             
-            if quad.get_proximity_sensor_1: 
-                quad.fix_trajectory('foward')
-            
-            if quad.get_proximity_sensor_3:
-                quad.fix_trajectory('back')
-                    
+            quad.test_colision()
                     
             if quad.target_position[0] > sim.x_limit[0]:
                 quad.set_foward()
 
-            # elif quad.target_position[1] > sim.y_limit[0]:
-            #     err_code = vrep.simxSetObjectPosition(sim.clientID,targetObj,-1,[pos[0], pos[1]-v_start, pos[2]],vrep.simx_opmode_oneshot)
+            elif quad.target_position[1] > sim.y_limit[0]:
+                quad.set_rigth()
             
-            elif  quad.target_position[2] < sim.z_limit[1]:
-                quad.set_up()
 
             if (quad.target_position[0] <= sim.x_limit[0] and
                 quad.target_position[1] <= sim.y_limit[0] and

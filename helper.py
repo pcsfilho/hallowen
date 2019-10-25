@@ -8,12 +8,12 @@ class Simulation(object):
         self.clientID = None
         self.x_limit = [-9, 9]
         self.y_limit = [-9, 9] 
-        self.z_limit = [0, 3]
+        self.z_limit = [0, 2]
         self.start = True
-        self.v_start = 0.05
-        self.x = -8.5
+        self.v_start = 0.2
+        self.x = -0
         self.y = -9
-        self.z = 4
+        self.z = 2
         self.START = True
         self.SEARCH = False
         self.vx_search = 0.01
