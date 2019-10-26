@@ -8,7 +8,7 @@ class Simulation(object):
         self.clientID = None
         self.x_limit = [-9, 9]
         self.y_limit = [-9, 9] 
-        self.z_limit = [0, 2]
+        self.z_limit = [0, 1.8]
         self.start = True
         self.v_start = 0.2
         self.x = -0
@@ -17,9 +17,9 @@ class Simulation(object):
         self.START = True
         self.SEARCH = False
         self.vx_search = 0.01
-        self.x_enable = True
+        self.x_enable = False
         self.vy_search = 0.01
-        self.y_enable = False
+        self.y_enable = True
         self.y_control = 0
         self.boss = False
         

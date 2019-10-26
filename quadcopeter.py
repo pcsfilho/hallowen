@@ -14,8 +14,20 @@ class Quadcopter(object):
         self.proximity_sensor_3 = None
         self.proximity_sensor_4 = None
         self.proximity_sensor_5 = None
+        self.foward_enable = False
+        self.back_enable = False
+        self.left_enable = True
+        self.right_enable = False
+        self.shift_enable = False
+        shift_enable = False
         self.shift = 0.1
-            
+        self.current = 'U'
+        self.x_limit = [-9, 9]
+        self.y_limit = [-9, 9] 
+        self.z_limit = [0, 1.8]
+        self.fix = False
+        self.y_traveled = []
+        
     def init_sensors(self):    
         err_code, self.proximity_sensor_1 = vrep.simxGetObjectHandle(self.clientID,"s1", vrep.simx_opmode_blocking)
         err_code, self.proximity_sensor_2 = vrep.simxGetObjectHandle(self.clientID,"s2", vrep.simx_opmode_blocking)
@@ -35,20 +47,34 @@ class Quadcopter(object):
         )
         return state
     
-    def test_colision(self):
-        if self.get_proximity_sensor_1:
+    def test_trajectory(self):
+        time.sleep(0.05)
+        if self.get_proximity_sensor_4 and self.target_position[1] + 1.5 < self.y_limit[1] and self.current=='L':
+            self.fix_trajectory(sensor = self.proximity_sensor_4, function =  self.set_left)
+        
+        elif self.get_proximity_sensor_3 and self.target_position[1] - 1.5 > self.y_limit[0] and self.current=='R':
+            self.fix_trajectory(sensor = self.proximity_sensor_3, function = self.set_rigth)
+        
+        elif self.get_proximity_sensor_1 and self.target_position[0] + 1.5 < self.x_limit[1] and self.current=='F':
             self.fix_trajectory(sensor = self.proximity_sensor_1, function =  self.set_foward)
         
-        if self.get_proximity_sensor_2:
+        elif self.get_proximity_sensor_2 and self.target_position[0] - 1.5 > self.x_limit[0] and self.current=='B':
             self.fix_trajectory(sensor = self.proximity_sensor_2, function = self.set_back)
-            
+        
+        if  (self.target_position[2] > self.z_limit[1] and not self.fix):
+            self.fix_height()
 
+    def fix_height(self):
+        while self.target_position[2] >= self.z_limit[1] and not self.get_proximity_sensor_5:
+            self.set_down()
+            
     def set_foward(self):
         err_code = vrep.simxSetObjectPosition(
             self.clientID,self.target, -1,
             [self.target_position[0]+self.shift, self.target_position[1], self.target_position[2]],
             vrep.simx_opmode_oneshot
         )
+        self.test_trajectory()
         
     def set_up(self):
         err_code = vrep.simxSetObjectPosition(
@@ -56,6 +82,7 @@ class Quadcopter(object):
             [self.target_position[0], self.target_position[1], self.target_position[2]+self.shift],
             vrep.simx_opmode_oneshot
         )
+        
     
     def set_down(self):
         err_code = vrep.simxSetObjectPosition(
@@ -63,13 +90,15 @@ class Quadcopter(object):
             [self.target_position[0], self.target_position[1], self.target_position[2]-self.shift],
             vrep.simx_opmode_oneshot
         )
-    
+        
+        
     def set_back(self):
         err_code = vrep.simxSetObjectPosition(
             self.clientID,self.target, -1,
             [self.target_position[0]-self.shift, self.target_position[1], self.target_position[2]],
             vrep.simx_opmode_oneshot
         )
+        self.test_trajectory()
     
     def set_rigth(self):
         err_code = vrep.simxSetObjectPosition(
@@ -77,6 +106,7 @@ class Quadcopter(object):
             [self.target_position[0], self.target_position[1]-self.shift, self.target_position[2]],
             vrep.simx_opmode_oneshot
         )
+        self.test_trajectory()
     
     def set_left(self):
         err_code = vrep.simxSetObjectPosition(
@@ -84,29 +114,26 @@ class Quadcopter(object):
             [self.target_position[0], self.target_position[1]+self.shift, self.target_position[2]],
             vrep.simx_opmode_oneshot
         )
+        self.test_trajectory()
         
     def fix_trajectory(self, sensor, function):
         last_position = self.target_position
-        time.sleep(0.05)
-        
-            
+        self.fix = True
         while 1:
             if not self.update_sensor(sensor):
                 count = 0
                 time.sleep(0.05)
-                while count <=100:
+                while count <=10:
                     function()
                     count = count + 1
-                    time.sleep(0.02)
-                
-                while self.target_position[2] > last_position[2]:
-                    if self.get_proximity_sensor_5:
-                        break
-                    self.set_down()
                     time.sleep(0.05)
+                    
+                self.fix_height()
                 break
             
             self.set_up()
+            
+        self.fix = False
             
     
     @property

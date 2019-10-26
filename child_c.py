@@ -18,82 +18,72 @@ if sim.clientID != -1:
     sim.get_position(quad.target, vrep.simx_opmode_streaming)
         
     time.sleep(0.2)
+
+    #sim.get_position(quad.target, vrep.simx_opmode_buffer)
+    quad.update_sensor(quad.proximity_sensor_1)
+    quad.update_sensor(quad.proximity_sensor_2)
+    quad.update_sensor(quad.proximity_sensor_3)
+    quad.update_sensor(quad.proximity_sensor_4)
+    quad.update_sensor(quad.proximity_sensor_5)
+    
+    while quad.target_position[2] <= sim.z_limit[1]:
+        quad.set_up()
+        
+    while quad.target_position[0] > sim.x_limit[0] + 1:
+        quad.current = 'B'
+        quad.set_back()
+    
+    while quad.target_position[1] + 1 <= sim.y_limit[1]:
+        quad.current = 'L'
+        quad.set_left()
+    
+    quad.foward_enable = True
+    x=False
+    count=0
+    end=False
     while 1:
-        #sim.get_position(quad.target, vrep.simx_opmode_buffer)
-        quad.update_sensor(quad.proximity_sensor_1)
-        quad.update_sensor(quad.proximity_sensor_2)
-        quad.update_sensor(quad.proximity_sensor_3)
-        quad.update_sensor(quad.proximity_sensor_4)
-        quad.update_sensor(quad.proximity_sensor_5)
+        if quad.foward_enable:
+            quad.current = 'F'
+            quad.set_foward()
+            
+        if quad.back_enable:
+            quad.current = 'B'
+            quad.set_back()
         
-        # while quad.target_position[2] < sim.z_limit[1]:
-        #     quad.set_up()
-            
-        # while quad.target_position[0] > sim.x_limit[0]:
-        #     quad.set_back()
-            
-        if sim.START:
-            
-            quad.test_colision()
-                    
-            if quad.target_position[0] > sim.x_limit[0]:
-                quad.set_foward()
-
-            elif quad.target_position[1] > sim.y_limit[0]:
+        if quad.shift_enable:
+            quad.current = 'R'
+            count = 0
+            while count < 75:
+                if (quad.target_position[1] -1.5 <= sim.y_limit[0] and quad.target_position[0] -1.5 <= sim.x_limit[0]) or end:
+                    break
+                
                 quad.set_rigth()
-            
-
-            if (quad.target_position[0] <= sim.x_limit[0] and
-                quad.target_position[1] <= sim.y_limit[0] and
-                quad.target_position[2] >= sim.z_limit[1]
-            ):
-                sim.START = False
-                sim.SEARCH = True
+                count = count + 1
+            quad.shift_enable = False
+            if x:
+                quad.back_enable = True
+            else:
+                quad.foward_enable = True
         
-        # if (SEARCH):
-        #     x = pos[0]
-        #     y = pos[1]
-        #     z = pos[2]
-        #     if x_enable:
-        #         print('X ENABLED')
-        #         if x < x_limit[0] and vx_search < 0:
-        #             vx_search = -vx_search
-        #             x_enable = False
-        #             y_enable = True
-                
-        #         if (x > x_limit[1] and vx_search > 0):
-        #             vx_search =  - vx_search
-        #             x_enable = False
-        #             y_enable = True
-                
-                
-        #         if (x > -6 and x < 6 and not boss):
-        #             boss = True
-        #             vx_search = vx_search * 2.5
-        #         else:
-        #             if (x <= -6 or x >= 6 and boss):
-        #                 boss = False
-        #                 vx_search = 0.1 if vx_search > 0 else -0.1
-                    
-        #         x = x + vx_search
+        if quad.target_position[0] + 1.5 >= sim.x_limit[1] and (count==0 or not x):
+            x=True
+            quad.foward_enable = False
+            quad.shift_enable = True
             
-        #     if y_enable:
-        #         print('Y ENABLED')
-        #         y = y + vy_search
-        #         y_control = y_control + 1
-                
-        #         if y_control >= 50:
-        #             y_control = 0
-        #             y_enable = False
-        #             x_enable = True
-            
-        #     print(f'x[{x}] y[{y}] z[{z}]')
-        #     err_code = vrep.simxSetObjectPosition(clientID,targetObj,-1,[x, y, z],vrep.simx_opmode_oneshot)
+        if quad.target_position[0] -1.5 <= sim.x_limit[0] and x:
+            x=False
+            quad.back_enable = False
+            quad.shift_enable = True
         
-        if (sim.SEARCH and sim.x >= 8 and sim.y >= 8):
-            sim.SEARCH = False
-                        
-        time.sleep(0.2)
+        if quad.target_position[0]+1.5 >= sim.x_limit[1] and quad.target_position[1] -1.5 <= sim.y_limit[0]:
+            print('*******************************END***************************')
+            end = True
+        
+        if quad.target_position[1] -1.5 <= sim.y_limit[0] and end and not x:
+            break
+        
+    print('Done')
+               
 else:
     print("Not connected to remote A")
 
