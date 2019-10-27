@@ -1,27 +1,13 @@
-import numpy as np
 import vrep
 
-class Simulation(object):
+class Map(object):
     
-    def __init__(self):
-        vrep.simxFinish(-1) # just in case, close all opened connections
+    def __init__(self, x,y,z):
+        vrep.simxFinish(-1) # close all opened connections
         self.clientID = None
-        self.x_limit = [-9, 9]
-        self.y_limit = [-9, 9] 
-        self.z_limit = [0, 1.8]
-        self.start = True
-        self.v_start = 0.2
-        self.x = -0
-        self.y = -9
-        self.z = 2
-        self.START = True
-        self.SEARCH = False
-        self.vx_search = 0.01
-        self.x_enable = False
-        self.vy_search = 0.01
-        self.y_enable = True
-        self.y_control = 0
-        self.boss = False
+        self.x = x
+        self.y = y 
+        self.z = z
         self.ref_obj = 23
         
     def start_connection(self, server, port):
@@ -30,7 +16,27 @@ class Simulation(object):
     def stop_connection(self):
         vrep.simxFinish(self.clientID) # fechando conexao com o servidor
         print('Conexao fechada!')
-        
+    
+    #Return the position of some object in the map
     def get_position(self, obj, mode = vrep.simx_opmode_buffer):
         err_code, pos = vrep.simxGetObjectPosition(self.clientID,obj,-1,vrep.simx_opmode_streaming)
         return pos
+
+class SensorVision(object):
+    
+    def __init__(self, clientID):
+        self.clientID = clientID
+        self.vision_sensor = vrep.simxGetObjectHandle(self.clientID,"vs", vrep.simx_opmode_blocking)[1]
+        self.resolution  = None
+        self.image = None
+        
+    def init_sensor(self):
+        vrep.simxGetVisionSensorImage(self.clientID,self.vision_sensor, 0, vrep.simx_opmode_streaming)
+    
+    @property
+    def get_image(self):
+        err_code, res, image = vrep.simxGetVisionSensorImage(
+            self.clientID, self.vision_sensor, 0, vrep.simx_opmode_buffer
+        )
+        
+        return image
