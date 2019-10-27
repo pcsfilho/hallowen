@@ -1,5 +1,5 @@
 # Hallowen V-REP
-This project shows a simulation of a quadricopter using the v-rep tool.
+This repository presents a project which establishes a connection between the client side developed with the help of python language and the VREP tool. It implemented the logic in a quadricoptero should find a black cube on the map.
 
 ## Tools and Requirements
 
@@ -13,7 +13,6 @@ Python version v3.6 or greater
 Linux 64x
 
 ## Run
---
 - **First first you must download the project in git:**
   -```sh
     $ git clone https://github.com/pcsfilho/hallowen.git
@@ -66,3 +65,7 @@ Represents the quadcopter with attributes and sensors.
 This project was based on
 - [VREP](http://www.coppeliarobotics.com/helpFiles/)
 - [Forum](http://www.forum.coppeliarobotics.com)
+
+## Improvements
+In the future it is expected to improve the search algorithm in order to find the object more accurately.
+In addition to improving collision correction.
