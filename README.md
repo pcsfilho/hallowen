@@ -15,8 +15,8 @@ Linux 64x
 ## Run
 --
 - **First first you must download the project in git:**
-  - ```sh
-        $ git clone https://github.com/pcsfilho/hallowen.git
+  -```sh
+    $ git clone https://github.com/pcsfilho/hallowen.git
     ```
 - **After downloading the project you must enter the folder:**
     - ```sh
@@ -24,7 +24,7 @@ Linux 64x
     ```
 
 - **You must open the scene in VREP. The scene is located in the vrep_content folder and is named desafio.ttt.**
-- **After opening the scene and starting the scene, you can start the python script for the control and execution of the map search. **:
+- **After opening the scene and starting the scene, you can start the python script for the control and execution of the map search.**:
     -   ```sh
         $ python main
         ```
