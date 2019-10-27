@@ -22,6 +22,7 @@ class Simulation(object):
         self.y_enable = True
         self.y_control = 0
         self.boss = False
+        self.ref_obj = 23
         
     def start_connection(self, server, port):
         self.clientID = vrep.simxStart(server, port, True, True,5000,5) # start a connection

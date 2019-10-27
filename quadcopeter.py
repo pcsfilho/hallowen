@@ -14,6 +14,7 @@ class Quadcopter(object):
         self.proximity_sensor_3 = None
         self.proximity_sensor_4 = None
         self.proximity_sensor_5 = None
+        self.vision_sensor = None
         self.foward_enable = False
         self.back_enable = False
         self.left_enable = True
@@ -27,6 +28,9 @@ class Quadcopter(object):
         self.z_limit = [0, 1.8]
         self.fix = False
         self.y_traveled = []
+        self.resolution  = None
+        self.line        = None
+        self.half        = None
         
     def init_sensors(self):    
         err_code, self.proximity_sensor_1 = vrep.simxGetObjectHandle(self.clientID,"s1", vrep.simx_opmode_blocking)
@@ -34,12 +38,14 @@ class Quadcopter(object):
         err_code, self.proximity_sensor_3 = vrep.simxGetObjectHandle(self.clientID,"s3", vrep.simx_opmode_blocking)
         err_code, self.proximity_sensor_4 = vrep.simxGetObjectHandle(self.clientID,"s4", vrep.simx_opmode_blocking)
         err_code, self.proximity_sensor_5 = vrep.simxGetObjectHandle(self.clientID,"s5", vrep.simx_opmode_blocking)
+        err_code, self.vision_sensor = vrep.simxGetObjectHandle(self.clientID,"vs", vrep.simx_opmode_blocking)
 
         vrep.simxReadProximitySensor(self.clientID, self.proximity_sensor_1, vrep.simx_opmode_streaming)
         vrep.simxReadProximitySensor(self.clientID, self.proximity_sensor_2, vrep.simx_opmode_streaming)
         vrep.simxReadProximitySensor(self.clientID, self.proximity_sensor_3, vrep.simx_opmode_streaming)
         vrep.simxReadProximitySensor(self.clientID, self.proximity_sensor_4, vrep.simx_opmode_streaming)
         vrep.simxReadProximitySensor(self.clientID, self.proximity_sensor_5, vrep.simx_opmode_streaming)
+        vrep.simxGetVisionSensorImage(self.clientID,self.vision_sensor,0,vrep.simx_opmode_streaming)
     
     def update_sensor(self, sensor):
         err_code, state, value, detectedObjectHandle, detectedSurfaceNormalVector = vrep.simxReadProximitySensor(
@@ -134,12 +140,34 @@ class Quadcopter(object):
             self.set_up()
             
         self.fix = False
-            
+    
+    def object_was_found(self, ref):
+        return ref in self.get_vision_sensor_image
+    
+    @property
+    def get_vision_sensor_image(self):
+        err_code, res, image = vrep.simxGetVisionSensorImage(
+            self.clientID, self.vision_sensor, 0,vrep.simx_opmode_buffer
+        )
+        if not self.resolution:
+            self.resolution = res[0]
+            self.line = self.resolution * 3
+            self.half = int(self.line*self.resolution/2)
+        
+        return image 
     
     @property
     def target_position(self):
         err_code, self.current_target_position = vrep.simxGetObjectPosition(self.clientID,self.target,-1,vrep.simx_opmode_buffer)
         return self.current_target_position
+    
+    @property
+    def get_proximity_sensor_1(self):
+        err_code, state, value, detectedObjectHandle, detectedSurfaceNormalVector = vrep.simxReadProximitySensor(
+            self.clientID, self.proximity_sensor_1, vrep.simx_opmode_buffer
+        )
+        
+        return state
     
     @property
     def get_proximity_sensor_1(self):
