@@ -68,7 +68,7 @@ This project was based on
 
 ## Project decisions
 For this project defined the following settings for the vision sensor quadricoptero:
-![Optional Text](../hallowen/img/pespectiive.png)
+![Optional Text](../hallowen/img/pespective.png)
 
 Just like a color selection filter for cube visualization in simulation:
 ![Optional Text](../hallowen/img/filter.png)
