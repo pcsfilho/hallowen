@@ -1,5 +1,5 @@
 # Hallowen V-REP
-This repository presents a project which establishes a connection between the client side developed with the help of python language and the VREP tool. It implemented the logic in a quadricoptero should find a black cube on the map.
+This repository presents a project which establishes a connection between the client side developed with the help of python language and the VREP tool. It implemented the logic in a quadcopter should find a black cube on the map.
 
 ## Tools and Requirements
 
@@ -46,7 +46,7 @@ This project is divided into two main classes:
 - **Quadcopter**
 Represents the quadcopter with attributes and sensors.
     - Atributes:
-        - target: Target that control the quadricopter position.
+        - target: Target that control the quadcopter position.
         - sensor_vision:
         - shift:
         - proximity_sensor_1: This proximity sensor is responsible for detecting collisions in forward movements
@@ -67,7 +67,7 @@ This project was based on
 - [Forum](http://www.forum.coppeliarobotics.com)
 
 ## Project decisions
-    - For this project defined the following settings for the vision sensor quadricoptero:
+    - For this project defined the following settings for the vision sensor quadcopter:
 
 ![Optional Text](https://github.com/pcsfilho/hallowen/blob/master/img/pespective.png)
 
