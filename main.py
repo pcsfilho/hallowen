@@ -7,7 +7,7 @@ from quadcopeter import Quadcopter
 if __name__ == "__main__":
 
     x = [-9, 9] # x map limit
-    y = [-9, 9] # y map limit
+    y = [-11, 9] # y map limit
     z = [0.05, 1.8] # z map limit
     server = '127.0.0.1'
     port = 19999

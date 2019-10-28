@@ -18,6 +18,7 @@ class Quadcopter(object):
         self.foward_enable = False
         self.back_enable = False
         self.shift_enable = False
+        self.perpective = 2.1
         
         self.proximity_sensor_1 = None
         self.proximity_sensor_2 = None
@@ -64,16 +65,16 @@ class Quadcopter(object):
     '''
     def test_trajectory(self):
         time.sleep(0.02)
-        if self.get_proximity_sensor_4 and self.target_position[1] + 1.5 < self.map.y[1] and self.current=='L':
+        if self.get_proximity_sensor_4 and self.target_position[1] + self.perpective < self.map.y[1] and self.current=='L':
             self.fix_trajectory(sensor = self.proximity_sensor_4, function =  self.set_left)
         
-        elif self.get_proximity_sensor_3 and self.target_position[1] - 1.5 > self.map.y[0] and self.current=='R':
+        elif self.get_proximity_sensor_3 and self.target_position[1] - self.perpective > self.map.y[0] and self.current=='R':
             self.fix_trajectory(sensor = self.proximity_sensor_3, function = self.set_rigth)
         
-        elif self.get_proximity_sensor_1 and self.target_position[0] + 1.5 < self.map.x[1] and self.current=='F':
+        elif self.get_proximity_sensor_1 and self.target_position[0] + self.perpective < self.map.x[1] and self.current=='F':
             self.fix_trajectory(sensor = self.proximity_sensor_1, function =  self.set_foward)
         
-        elif self.get_proximity_sensor_2 and self.target_position[0] - 1.5 > self.map.x[0] and self.current=='B':
+        elif self.get_proximity_sensor_2 and self.target_position[0] - self.perpective > self.map.x[0] and self.current=='B':
             self.fix_trajectory(sensor = self.proximity_sensor_2, function = self.set_back)
         
         if  (self.target_position[2] > self.map.z[1] and not self.fix):
@@ -159,7 +160,7 @@ class Quadcopter(object):
             if not self.update_sensor(sensor):
                 count = 0
                 time.sleep(0.05)
-                while count <= 10 or self.get_proximity_sensor_5: # move to the function movement while proximity sensor is True 
+                while count <= 10: # move to the function movement 
                     function()
                     count = count + 1
                     time.sleep(0.05)
@@ -202,19 +203,20 @@ class Quadcopter(object):
                 if self.back_enable:
                     self.current = 'B'
                     self.set_back()
-                
+                time.sleep(0.02)
                 if self.shift_enable:
                     self.current = 'R'
                     count = 0
                     #This offset is equivalent perspective set for the vision sensor
-                    #1.5 was used in this case because of defined size for the proximity sensor.
-                    while count < 70:
-                        if (self.target_position[1] -1.5 <= self.map.y[0] and 
-                                self.target_position[0] -1.5 <= self.map.x[0]
+                    #self.perpective was used in this case because of defined size for the proximity sensor.
+                    while count <= 87:
+                        if (self.target_position[1] -self.perpective <= self.map.y[0] and 
+                                self.target_position[0] -self.perpective <= self.map.x[0]
                             ) or end or self.was_found:
                             break
                         
                         self.set_rigth()
+                        time.sleep(0.02)
                         self.was_found = self.object_was_found()
                         count = count + 1
                     self.shift_enable = False
@@ -223,21 +225,21 @@ class Quadcopter(object):
                     else:
                         self.foward_enable = True
                 
-                #1.5 was used in this case because of defined size for the proximity sensor.
-                if self.target_position[0] + 1.5 >= self.map.x[1] and (count==0 or not x):
+                #self.perpective was used in this case because of defined size for the proximity sensor.
+                if self.target_position[0] + self.perpective >= self.map.x[1] and (count==0 or not x):
                     x=True
                     self.foward_enable = False
                     self.shift_enable = True
                     
-                if self.target_position[0] -1.5 <= self.map.x[0] and x:
+                if self.target_position[0] -self.perpective <= self.map.x[0] and x:
                     x=False
                     self.back_enable = False
                     self.shift_enable = True
                 
-                if self.target_position[0]+1.5 >= self.map.x[1] and self.target_position[1] -1.5 <= self.map.y[0]:
+                if self.target_position[0]+self.perpective >= self.map.x[1] and self.target_position[1] -self.perpective <= self.map.y[0]:
                     end = True
                 
-                if self.target_position[1] -1.5 <= self.map.y[0] and end and not x:
+                if self.target_position[1] -self.perpective <= self.map.y[0] and end and not x:
                     break
             else:
                 break

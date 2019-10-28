@@ -66,6 +66,13 @@ This project was based on
 - [VREP](http://www.coppeliarobotics.com/helpFiles/)
 - [Forum](http://www.forum.coppeliarobotics.com)
 
+## Project decisions
+For this project defined the following settings for the vision sensor quadricoptero:
+![Optional Text](../hallowen/img/pespectiive.png)
+
+Just like a color selection filter for cube visualization in simulation:
+![Optional Text](../hallowen/img/filter.png)
+
 ## Improvements
 In the future it is expected to improve the search algorithm in order to find the object more accurately.
 In addition to improving collision correction.
