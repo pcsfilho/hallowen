@@ -67,10 +67,12 @@ This project was based on
 - [Forum](http://www.forum.coppeliarobotics.com)
 
 ## Project decisions
-For this project defined the following settings for the vision sensor quadricoptero:
+    - For this project defined the following settings for the vision sensor quadricoptero:
+
 ![Optional Text](https://github.com/pcsfilho/hallowen/blob/master/img/pespective.png)
 
-Just like a color selection filter for cube visualization in simulation:
+    - Just like a color selection filter for cube visualization in simulation:
+
 ![Optional Text](https://github.com/pcsfilho/hallowen/blob/master/img/filter.png)
 
 ## Improvements
